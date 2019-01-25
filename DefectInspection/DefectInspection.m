@@ -22,7 +22,7 @@ function varargout = DefectInspection(varargin)
 
 % Edit the above text to modify the response to help DefectInspection
 
-% Last Modified by GUIDE v2.5 21-Jan-2019 17:15:03
+% Last Modified by GUIDE v2.5 24-Jan-2019 15:28:41
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -86,7 +86,8 @@ function UpButton_Callback(hObject, eventdata, handles)
 % hObject    handle to UpButton (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-[filename,pathname]=uigetfile({'*.bmp','*.jpg'},'Load image');
+% [filename,pathname]=uigetfile({'*.bmp','*.jpg'},'Load image');
+[filename,pathname]=uigetfile({'*.jpg;*.tif;*.png;*.bmp','All Image Files';'*.*','All Files' });
 fullFilename = [pathname filename];
 Imag = imread(fullFilename);
 axes(handles.Oaxes);
@@ -175,6 +176,7 @@ function SaveButton_Callback(hObject, eventdata, handles)
 % hObject    handle to SaveButton (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+
 Fimag=handles.Faxes.Children.CData;
 [FileName, PathName, FilterIndex] = uiputfile('*.bmp', 'Save picture as:');
 if ~ischar(FileName)
@@ -183,3 +185,47 @@ if ~ischar(FileName)
 end
 File = fullfile(PathName, FileName);
 imwrite(Fimag, File);
+
+
+
+% --- Executes on button press in CropButton.
+function CropButton_Callback(hObject, eventdata, handles)
+% hObject    handle to CropButton (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+imag=handles.Faxes.Children.CData;
+axes(handles.Oaxes);
+axis off;
+%cursor換成十字，來框範圍
+h=imrect; 
+setColor(h,'R');
+pos=getPosition(h);  %pos為start xy end xy
+
+FImag = imcrop(imag,pos);
+% axes(handles.Oaxes);
+% imshow(FImag);title('Original Image');
+axes(handles.Faxes);
+imshow(FImag);title('Final Image');
+%delete(h);   
+
+
+% --- Executes on button press in EntropyButton.
+function EntropyButton_Callback(hObject, eventdata, handles)
+% hObject    handle to EntropyButton (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+imag=handles.Faxes.Children.CData;
+enValue = entropy(imag);
+val = num2str(enValue);
+set(handles.EntropyText, 'String', val);
+
+stats = regionprops('table',imag,'Centroid',...
+    'MajorAxisLength','MinorAxisLength','Area');
+centers = stats.Centroid;
+diameters = mean([stats.MajorAxisLength stats.MinorAxisLength],2);
+radii = diameters/2;
+Area= stats.Area
+figure(2),imshow(imag);
+hold on;
+viscircles(centers,radii);
+hold off;

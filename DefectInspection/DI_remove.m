@@ -87,10 +87,23 @@ function OkButton_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 global mom_handles
-a = handles.axes1.Children.CData;
+im = handles.axes1.Children.CData;
+area = regionprops(im,{'centroid','area'});
+% a=[area.Area];
+% Max=max(a);
+% Sum=sum(a(1,:));
+a=cat(1,area.Area);
+Max=max(a);
+Sum=sum(a);
+index=find(a==Max);
 
+point=area(index).Centroid;
+point=floor(point);  %½è¤ß®y¼Ðx,y
+
+titl=strcat('Max :',num2str(Max),',  Sum :',num2str(Sum))
 axes(mom_handles.Faxes);
-imshow(a);
+imshow(im);title(titl);
+%text(point(1)+10,point(2),'A1','Color','R','FontSize',20);
  close(gcbf); 
 
 

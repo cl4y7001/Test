@@ -22,7 +22,7 @@ function varargout = DI_thresholding(varargin)
 
 % Edit the above text to modify the response to help DI_thresholding
 
-% Last Modified by GUIDE v2.5 19-Jan-2019 10:07:33
+% Last Modified by GUIDE v2.5 22-Jan-2019 15:28:45
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -86,8 +86,7 @@ function OButton_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 global imag;
-global mom_handles
-mom_handles
+global mom_handles;
 a = handles.axes1.Children.CData;
 
 axes(mom_handles.Faxes);
@@ -108,7 +107,6 @@ value=get(handles.slider1, 'Value');
 position = num2str(value);
 set(handles.edit1, 'String', position);
 global imag;
-global imag2
 imag2 = double(value<imag);
 axes(handles.axes1);
 imshow(imag2);title('Threshold');
@@ -185,3 +183,50 @@ axes(handles.axes1);
 imshow(imag2);title('Threshold');
 set(handles.edit1, 'String', val*255);
 set(handles.slider1, 'Value', val*255);
+
+
+% --- Executes on selection change in popupmenu.
+function popupmenu_Callback(hObject, eventdata, handles)
+% hObject    handle to popupmenu (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+global imag;
+axes(handles.axes1);
+val =get(hObject,'value');
+switch val
+    case 1
+        imag2=imag;
+    case 2
+        imag2=edge(imag,'sobel');
+        title('sobel'); 
+    case 3
+        imag2=edge(imag,'roberts');   
+        title('roberts'); 
+    case 4
+        imag2=edge(imag,'prewitt');  
+        title('prewitt'); 
+    case 5
+        imag2=edge(imag,'log');   
+        title('log'); 
+    case 6
+        imag2=edge(imag,'canny');
+        title('canny'); 
+end
+
+imshow(imag2)
+        
+% Hints: contents = cellstr(get(hObject,'String')) returns popupmenu contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from popupmenu
+
+
+% --- Executes during object creation, after setting all properties.
+function popupmenu_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to popupmenu (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: popupmenu controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
